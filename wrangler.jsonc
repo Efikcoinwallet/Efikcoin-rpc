@@ -13,6 +13,12 @@
       "database_id": "efc"
     }
   ],
+  "analytics_engine_datasets": [
+    {
+      "binding": "EFC_ANALYTICS",
+      "dataset": "Efikcoin_mainnet_EFC"
+    }
+  ],
   "observability": {
     "enabled": false,
     "head_sampling_rate": 1,
@@ -21,18 +27,6 @@
       "head_sampling_rate": 1,
       "persist": true,
       "invocation_logs": true
-    },
-    "traces": {
-      "enabled": true,
-      "destinations": ["efikcoin-blockchain-pay-traces"],
-      "persist": true,
-      "head_sampling_rate": 1
     }
   }
-}
-
-{
-  "analytics_engine_datasets": [
-    { "binding": "RPC.efikcoin.com", "dataset": "Efikcoin_mainnet_EFC" }
-  ]
 }
