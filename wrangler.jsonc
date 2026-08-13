@@ -30,3 +30,9 @@
     }
   }
 }
+
+{
+  "analytics_engine_datasets": [
+    { "binding": "RPC.efikcoin.com", "dataset": "Efikcoin_mainnet_EFC" }
+  ]
+}
