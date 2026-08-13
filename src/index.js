@@ -1,137 +1,33 @@
-const BSC_RPC = "https://bsc-dataseed.bnbchain.org";
-
-const ALLOWED_METHODS = new Set([
-  "web3_clientVersion",
-  "web3_sha3",
-  "net_version",
-  "net_listening",
-  "net_peerCount",
-  "eth_chainId",
-  "eth_blockNumber",
-  "eth_getBalance",
-  "eth_getBlockByHash",
-  "eth_getBlockByNumber",
-  "eth_getTransactionByHash",
-  "eth_getTransactionReceipt",
-  "eth_call",
-  "eth_estimateGas",
-  "eth_gasPrice",
-  "eth_getCode",
-  "eth_getTransactionCount",
-  "eth_getLogs",
-  "eth_sendRawTransaction"
-]);
-
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "content-type": "application/json",
-      "access-control-allow-origin": "*",
-      "access-control-allow-headers": "Content-Type",
-      "access-control-allow-methods": "POST, OPTIONS"
-    }
-  });
-}
-
-function rpcError(id, code, message) {
-  return json({
-    jsonrpc: "2.0",
-    error: { code, message },
-    id: id ?? null
-  });
-}
-
 export default {
-  async fetch(request) {
-    if (request.method === "OPTIONS") {
-      return new Response(null, {
-        headers: {
-          "access-control-allow-origin": "*",
-          "access-control-allow-headers": "Content-Type",
-          "access-control-allow-methods": "POST, OPTIONS"
-        }
-      });
-    }
-
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
-
-    // Health endpoint
-    if (request.method === "GET" && url.pathname === "/health") {
-      return json({
-        status: "ok",
-        network: "BNB Smart Chain",
-        chainId: "0x38",
-        token: "EFC",
-        contract: "0x677Ce9CBa67f7484ea951a12897CE780cFd8fED1"
-      });
+    if (request.method === "OPTIONS") {
+      return new Response(null, { headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type"
+      }});
     }
-
-    if (request.method !== "POST") {
-      return rpcError(null, -32600, "Only POST requests are accepted");
+    if (url.pathname === "/" && request.method === "GET") {
+      return new Response(`<h1>Efikcoin RPC Live</h1><p>Use POST /rpc</p><p>Token: 0x9f8c29e496ecb6c39c221458f211234dfcb233e0</p><a href="/health">Health</a>`, { headers: { "Content-Type": "text/html" } });
     }
-
-    let body;
-
-    try {
-      body = await request.json();
-    } catch {
-      return rpcError(null, -32700, "Invalid JSON");
+    if (url.pathname === "/health") {
+      return new Response(JSON.stringify({ status: "ok", chainId: 56, token: "0x9f8c29e496ecb6c39c221458f211234dfcb233e0" }), { headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } });
     }
-
-    // JSON-RPC batch request
-    if (Array.isArray(body)) {
-      const responses = await Promise.all(
-        body.map((requestItem) => forwardRpc(requestItem))
-      );
-
-      return json(responses);
-    }
-
-    return forwardRpc(body);
-  }
-};
-
-async function forwardRpc(rpcRequest) {
-  if (!rpcRequest || rpcRequest.jsonrpc !== "2.0") {
-    return rpcError(
-      rpcRequest?.id,
-      -32600,
-      "Invalid JSON-RPC request"
-    );
-  }
-
-  if (!ALLOWED_METHODS.has(rpcRequest.method)) {
-    return rpcError(
-      rpcRequest.id,
-      -32601,
-      `Method not allowed: ${rpcRequest.method}`
-    );
-  }
-
-  try {
-    const response = await fetch(BSC_RPC, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json"
-      },
-      body: JSON.stringify(rpcRequest)
-    });
-
-    const text = await response.text();
-
-    return new Response(text, {
-      status: response.status,
-      headers: {
-        "content-type": "application/json",
-        "access-control-allow-origin": "*"
+    if (request.method === "POST") {
+      const body = await request.text();
+      const bscRpcs = ["https://bsc-dataseed.binance.org", "https://bsc-dataseed1.binance.org"];
+      for (const rpc of bscRpcs) {
+        try {
+          const res = await fetch(rpc, { method: "POST", body, headers: { "Content-Type": "application/json" } });
+          if (res.ok) {
+            const data = await res.text();
+            return new Response(data, { headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } });
+          }
+        } catch {}
       }
-    });
-  } catch {
-    return rpcError(
-      rpcRequest.id,
-      -32603,
-      "Unable to reach BNB Smart Chain RPC"
-    );
+      return new Response(JSON.stringify({ error: "RPC failed" }), { status: 500 });
+    }
+    return new Response("Use POST /rpc", { status: 404 });
   }
-      }
+}
