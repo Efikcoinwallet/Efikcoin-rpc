@@ -1,0 +1,27 @@
+- [View on BscScan](https://bscscan.com/token/0x677ce9cba67f7484ea951a12897ce780cfd8fed1)
+- [View on PancakeSwap](https://pancakeswap.finance/info/tokens/0x677ce9cba67f7484ea951a12897ce780cfd8fed1)
+
+## 🔧 How to Add to MetaMask
+
+1. Open MetaMask -> Add Network -> Custom Network
+2. Enter:
+   - **Network Name:** BSC Mainnet (Efikcoin RPC)
+   - **RPC URL:** `https://rpc.efikcoin.com/rpc`
+   - **Chain ID:** 56
+   - **Symbol:** BNB
+   - **Block Explorer:** https://bscscan.com
+
+3. To add EFC Token:
+   - Import Token -> Custom Token
+   - Address: `0x677ce9cba67f7484ea951a12897ce780cfd8fed1`
+   - Symbol: EFC
+   - Decimals: 18
+
+## 🚀 Tech Stack
+
+- **Cloudflare Workers** - Global edge deployment
+- **Embedded Logo** - No external dependencies
+- **Fallback RPCs:** bsc-dataseed.binance.org
+
+## 📁 Project Structure
+
