@@ -6,13 +6,6 @@
   "routes": [
     { "pattern": "rpc.efikcoin.com/*", "zone_name": "efikcoin.com" }
   ],
-  "d1_databases": [
-    {
-      "binding": "Efikcoin",
-      "database_name": "efc",
-      "database_id": "efc"
-    }
-  ],
   "analytics_engine_datasets": [
     {
       "binding": "EFC_ANALYTICS",
