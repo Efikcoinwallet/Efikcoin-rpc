@@ -1,10 +1,81 @@
 export default {
-  async fetch(r){
-    const u=new URL(r.url);
-    if(r.method==="OPTIONS")return new Response(null,{headers:{"Access-Control-Allow-Origin":"*"}});
-    if(u.pathname==="/"&&r.method==="GET")return new Response(`<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>EFC</title></head><body style="margin:0;background:#070a12;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif"><div style="background:#12182a;border:1px solid #1f2a44;border-radius:24px;padding:40px;max-width:360px;width:90%;text-align:center"><div style="width:120px;height:120px;border-radius:50%;margin:0 auto 20px;background:radial-gradient(circle at 30% 30%, #ffdf70, #f0b90b 50%, #b8860b);display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:900;color:#3d2e00;box-shadow:0 0 30px rgba(240,185,11,0.6)">EFC</div><h2>Efikcoin RPC</h2><p style="color:#22c55e">● Live - BSC Mainnet</p><div style="background:#0a0f1d;border:1px solid #1e2a44;padding:12px;border-radius:8px;font-size:10px;word-break:break-all;margin:10px 0">0x677ce9cba67f7484ea951a12897ce780cfd8fed1</div><div style="background:#0a0f1d;border:1px solid #1e2a44;padding:12px;border-radius:8px;font-size:12px">https://rpc.efikcoin.com/rpc<br>BSC 56</div></div></body></html>`,{headers:{"Content-Type":"text/html","Access-Control-Allow-Origin":"*"}});
-    if(u.pathname==="/health")return new Response('{"ok":true}',{headers:{"Content-Type":"application/json","Access-Control-Allow-Origin":"*"}});
-    if(r.method==="POST"){const b=await r.text();for(const x of["https://bsc-dataseed.binance.org","https://bsc-dataseed1.binance.org"]){try{const f=await fetch(x,{method:"POST",body:b,headers:{"Content-Type":"application/json"}});if(f.ok)return new Response(await f.text(),{headers:{"Content-Type":"application/json","Access-Control-Allow-Origin":"*"}})}catch{}}return new Response("fail",{status:500})}
-    return new Response("EFC");
+  async fetch(request) {
+    // CORS
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type"
+        }
+      });
+    }
+
+    const url = new URL(request.url);
+
+    // Health check
+    if (url.pathname === "/health") {
+      return new Response(JSON.stringify({
+        status: "ok",
+        chainId: 20488,
+        chain: "Efikcoin Chain",
+        gas: "EFC",
+        founder: "0xC5AD5cfcF81AD63a94227334b898eafCe6B27cCA"
+      }), {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        }
+      });
+    }
+
+    // RPC endpoint
+    if (url.pathname.includes("/rpc")) {
+      try {
+        const bodyText = await request.text();
+        const body = JSON.parse(bodyText || "{}");
+
+        // Return YOUR Chain ID 20488 = 0x5008
+        if (body.method === "eth_chainId") {
+          return new Response(JSON.stringify({
+            jsonrpc: "2.0",
+            id: body.id || 1,
+            result: "0x5008"
+          }), {
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*"
+            }
+          });
+        }
+
+        // Proxy other calls to BSC
+        const bscRes = await fetch("https://bsc-dataseed.binance.org/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: bodyText
+        });
+        const data = await bscRes.text();
+        return new Response(data, {
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+          }
+        });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+          }
+        });
+      }
+    }
+
+    // Homepage
+    return new Response("Efikcoin Chain ID 20488 - EFC Gas - https://rpc.efikcoin.com/rpc", {
+      headers: { "Access-Control-Allow-Origin": "*" }
+    });
   }
 }
