@@ -1,30 +1,23 @@
 {
   "name": "efikcoin-rpc",
-  "main": "src/index.js",
-  "compatibility_date": "2024-09-23",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-11-12",
   "compatibility_flags": ["nodejs_compat"],
   "routes": [
-    { "pattern": "rpc.efikcoin.com/*", "zone_name": "efikcoin.com" }
-  ],
-  "analytics_engine_datasets": [
     {
-      "binding": "EFC_ANALYTICS",
-      "dataset": "Efikcoin_mainnet_EFC"
-    }
-  {
-  "observability": {
-    "enabled": false,
-    "head_sampling_rate": 1,
-    "logs": {
-      "enabled": true,
-      "head_sampling_rate": 1,
-      "persist": true,
-      "invocation_logs": true
+      "pattern": "rpc.efikcoin.com/rpc",
+      "zone_name": "efikcoin.com"
     },
-    "traces": {
-      "enabled": true,
-      "persist": true,
-      "head_sampling_rate": 1
+    {
+      "pattern": "rpc.efikcoin.com/*",
+      "zone_name": "efikcoin.com"
     }
+  ],
+  "vars": {
+    "CHAIN_ID": "20488",
+    "CHAIN_NAME": "Efikcoin Chain Mainnet",
+    "NATIVE_SYMBOL": "EFC",
+    "FOUNDER_ADDRESS": "0xC5AD5cfcF81AD63a94227334b898eafCe6B27cCA",
+    "BSC_RPC": "https://bsc-dataseed.binance.org/"
   }
 }
