@@ -1,10 +1,59 @@
 export default {
   async fetch(request) {
-    // CORS
-    if (request.method === "OPTIONS") {
-      return new Response(null, {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
+    const cors = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Content-Type": "application/json"
+    };
+    if (request.method === "OPTIONS") return new Response(null, { headers: cors });
+
+    const url = new URL(request.url);
+
+    // Health
+    if (url.pathname === "/health") {
+      return new Response(JSON.stringify({ status: "ok", chainId: 20488, symbol: "EFC" }), { headers: cors });
+    }
+
+    // RPC - THIS MAKES WALLET VALIDATE
+    if (url.pathname.includes("/rpc") || url.pathname === "/") {
+      if (request.method === "GET") {
+        // For browser visit
+        return new Response("Efikcoin Chain ID 20488 - EFC Gas - https://rpc.efikcoin.com/rpc", {
+          headers: { "Access-Control-Allow-Origin": "*" }
+        });
+      }
+
+      try {
+        const text = await request.text();
+        const body = JSON.parse(text);
+        
+        // Chain ID 20488 = 0x5008
+        if (body.method === "eth_chainId") {
+          return new Response(JSON.stringify({
+            jsonrpc: "2.0",
+            id: body.id,
+            result: "0x5008"
+          }), { headers: cors });
+        }
+
+        // Proxy others to BSC
+        const bsc = await fetch("https://bsc-dataseed.binance.org/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: text
+        });
+        const data = await bsc.text();
+        return new Response(data, { headers: cors });
+
+      } catch (e) {
+        return new Response(JSON.stringify({ jsonrpc: "2.0", id: 1, result: "0x5008" }), { headers: cors });
+      }
+    }
+
+    return new Response("Efikcoin Chain 20488", { headers: { "Access-Control-Allow-Origin": "*" } });
+  }
+}
           "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type"
         }
