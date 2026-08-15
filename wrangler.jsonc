@@ -1,11 +1,5 @@
 {
   "name": "efikcoin-rpc",
   "main": "src/index.js",
-  "compatibility_date": "2025-05-15",
-  "routes": [
-    {
-      "pattern": "rpc.efikcoin.com/*",
-      "zone_name": "efikcoin.com"
-    }
-  ]
+  "compatibility_date": "2025-05-15"
 }
