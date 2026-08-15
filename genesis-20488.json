@@ -1,0 +1,32 @@
+{
+  "config": {
+    "chainId": 20488,
+    "homesteadBlock": 0,
+    "eip150Block": 0,
+    "eip155Block": 0,
+    "eip158Block": 0,
+    "byzantiumBlock": 0,
+    "constantinopleBlock": 0,
+    "petersburgBlock": 0,
+    "istanbulBlock": 0,
+    "berlinBlock": 0,
+    "londonBlock": 0,
+    "clique": { "blockPeriod": 3, "epoch": 30000 }
+  },
+  "nonce": "0x0",
+  "timestamp": "0x0",
+  "extraData": "0x0000000000000000C5AD5cfcF81AD63a94227334b898eafCe6B27cCA00000000000000000000000000000000000000000000000000",
+  "gasLimit": "0x47b760",
+  "difficulty": "0x1",
+  "mixHash": "0x0000000000000000000000000000000000000000",
+  "coinbase": "0x0000000000000000000",
+  "alloc": {
+    "0xC5AD5cfcF81AD63a94227334b898eafCe6B27cCA": { "balance": "0x33B2E3C9FD0803CE8000000" },
+    "0x676cCf34C191a9D6EFE4B265b84877C619A559d0": { "balance": "0x1158E460913D00000" }
+  },
+  "sourceToken": "0x677Ce9CBa67f7484ea951a12897CE780cFd8fED1",
+  "chainName": "Efikcoin Mainnet",
+  "symbol": "EFC",
+  "rpc": "https://rpc.efikcoin.com/rpc",
+  "explorer": "https://explorer.efikcoin.com"
+}
