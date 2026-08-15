@@ -1,23 +1,11 @@
 {
   "name": "efikcoin-rpc",
-  "main": "src/index.ts",
-  "compatibility_date": "2024-11-12",
-  "compatibility_flags": ["nodejs_compat"],
+  "main": "src/index.js",
+  "compatibility_date": "2025-05-15",
   "routes": [
-    {
-      "pattern": "rpc.efikcoin.com/rpc",
-      "zone_name": "efikcoin.com"
-    },
     {
       "pattern": "rpc.efikcoin.com/*",
       "zone_name": "efikcoin.com"
     }
-  ],
-  "vars": {
-    "CHAIN_ID": "20488",
-    "CHAIN_NAME": "Efikcoin Chain Mainnet",
-    "NATIVE_SYMBOL": "EFC",
-    "FOUNDER_ADDRESS": "0xC5AD5cfcF81AD63a94227334b898eafCe6B27cCA",
-    "BSC_RPC": "https://bsc-dataseed.binance.org/"
-  }
+  ]
 }
