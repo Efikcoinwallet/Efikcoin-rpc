@@ -3,67 +3,68 @@ export default {
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Origin": "*"
+      "Access-Control-Allow-Headers": "Content-Type"
     };
-
+    
     if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
+      return new Response(null, { status: 204, headers: corsHeaders });
     }
-
-    try {
-      const url = new URL(request.url);
-
-      if (url.pathname === "/health") {
-        return new Response(
-          JSON.stringify({ chainId: 20488, name: "Efikcoin Chain", symbol: "EFC", gas: "EFC", founder: "0xC5AD5cfcF81AD63a94227334b898eafCe6B27cCA" }),
-          { headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } }
-        );
-      }
-
-      if (request.method === "GET") {
-        return new Response("Efikcoin Chain ID 20488 - EFC Gas - https://rpc.efikcoin.com/rpc", {
-          headers: { "Access-Control-Allow-Origin": "*" }
-        });
-      }
-
-      if (request.method === "POST") {
-        const bodyText = await request.text();
-        let body;
-        try {
-          body = JSON.parse(bodyText);
-        } catch {
-          body = {};
-        }
-
-        if (body.method === "eth_chainId") {
-          return new Response(
-            JSON.stringify({ jsonrpc: "2.0", id: body.id || 1, result: "0x5008" }),
-            { headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } }
-          );
-        }
-
-        const bscResponse = await fetch("https://bsc-dataseed.binance.org/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: bodyText
-        });
-
-        const data = await bscResponse.text();
-        return new Response(data, {
-          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
-        });
-      }
-
-      return new Response("Efikcoin Chain ID 20488", {
-        headers: { "Access-Control-Allow-Origin": "*" }
+    
+    if (request.method === "GET") {
+      return new Response(JSON.stringify({
+        chainId: 20488,
+        chainIdHex: "0x5008",
+        name: "Efikcoin Mainnet",
+        symbol: "EFC"
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
-
-    } catch (err) {
-      return new Response(
-        JSON.stringify({ jsonrpc: "2.0", id: 1, result: "0x5008" }),
-        { headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } }
-      );
+    }
+    
+    try {
+      const bodyText = await request.text();
+      const json = JSON.parse(bodyText);
+      
+      if (json.method === "eth_chainId") {
+        return new Response(JSON.stringify({
+          jsonrpc: "2.0",
+          id: json.id,
+          result: "0x5008"
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+      
+      if (json.method === "net_version") {
+        return new Response(JSON.stringify({
+          jsonrpc: "2.0",
+          id: json.id,
+          result: "20488"
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+      
+      const bscResponse = await fetch("https://bsc-dataseed.binance.org/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: bodyText
+      });
+      
+      const responseText = await bscResponse.text();
+      return new Response(responseText, {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+      
+    } catch (e) {
+      return new Response(JSON.stringify({
+        jsonrpc: "2.0",
+        id: 1,
+        error: { code: -32603, message: e.message }
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
     }
   }
-};
+}
