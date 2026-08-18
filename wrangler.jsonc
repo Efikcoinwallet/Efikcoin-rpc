@@ -1,15 +1,5 @@
 {
   "name": "efikcoin-rpc",
   "main": "src/index.js",
-  "compatibility_date": "2024-01-01",
-  "compatibility_flags": ["nodejs_compat"],
-  "vars": {
-    "CHAIN_ID": "20488",
-    "TREASURY": "0x676cCf34C191a9D6EFE4B265b84877C619A559d0",
-    "FOUNDER": "0xC5AD5cfcF81AD63a94227334b898eafCe6B27cCA"
-  },
-  "routes": [
-    { "pattern": "rpc.efikcoin.com/*", "zone_name": "efikcoin.com" },
-    { "pattern": "rpc.efikcoin.com/rpc", "zone_name": "efikcoin.com" }
-  ]
+  "compatibility_date": "2024-01-01"
 }
