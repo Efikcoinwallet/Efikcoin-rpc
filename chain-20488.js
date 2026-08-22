@@ -10,7 +10,7 @@ module.exports = {
     decimals: 18
   },
   infoURL: "https://efikcoin.com",
-  shortName: "efik",
+  shortName: "efc",
   chainId: 20488,
   networkId: 20488,
   explorers: [{
